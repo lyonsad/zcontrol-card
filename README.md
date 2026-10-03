@@ -26,7 +26,7 @@ The first version is a **prerelease for testing**. Implementation changes are re
 ### HACS
 
 1. Open HACS **Custom repositories** and add `https://github.com/lyonsad/zcontrol-card` with type **Dashboard** (older versions call this **Lovelace**).
-2. Find **Z-Control Card** and download it. If necessary, enable prerelease/beta versions in the version picker and choose `v0.1.0-beta.1`.
+2. Find **Z-Control Card** and download it. If necessary, enable prerelease/beta versions in the version picker and choose `v0.1.0-beta.2`.
 3. Confirm the dashboard resource exists as a JavaScript module: `/hacsfiles/zcontrol-card/zcontrol-card.js`.
 4. Reload the browser, edit a dashboard, and add **Z-Control Card**, or paste an example into a manual card.
 

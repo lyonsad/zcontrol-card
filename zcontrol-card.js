@@ -1,5 +1,5 @@
 /** Z-Control Card: a dependency-free, read-only Home Assistant dashboard card. */
-export const VERSION = "0.1.0-beta.1";
+export const VERSION = "0.1.0-beta.2";
 
 const PRESETS = {
   "508": {
@@ -214,7 +214,7 @@ export class ZControlCard extends HTMLElement {
     this._signature = signature;
     const focusedEntity = this.shadowRoot.activeElement?.dataset.entity;
     const card = element("ha-card", config.brand_colors === false ? "" : "brand");
-    card.style.setProperty("--zc-accent", config.accent_color ?? preset.color);
+    card.style.setProperty("--zc-accent", config.accent_color ?? (config.brand_colors === false ? "var(--primary-color)" : preset.color));
     card.style.setProperty("--zc-columns", config.metric_columns);
     const style = element("style", "", STYLES);
     const header = element("header", "header");
