@@ -17,13 +17,14 @@ Configure the Z-Control integration first and confirm its entities have readings
 1. Open **HACS → three-dot menu → Custom repositories**.
 2. Add `https://github.com/lyonsad/zcontrol-card` with type **Dashboard** (or **Lovelace** in older versions).
 3. Find **Z-Control Card**, download the latest stable release, and reload your browser.
-4. Check **Settings → Dashboards → three-dot menu → Resources** for `/hacsfiles/zcontrol-card/zcontrol-card.js`, type **JavaScript module**. Add it if missing. Enable **Advanced mode** in your profile if Resources is hidden.
 
-HACS installs numbered releases by default. To use `main`, select **Need a different version? → main**. This repository must be added manually; it is not in the HACS default store.
+HACS normally registers the JavaScript resource automatically.
+
+This repository must be added manually; it is not in the HACS default store.
 
 ### Manual
 
-Download [zcontrol-card.js from main](https://raw.githubusercontent.com/lyonsad/zcontrol-card/main/zcontrol-card.js) or a [release](https://github.com/lyonsad/zcontrol-card/releases/latest) to `config/www/zcontrol-card.js`. Add `/local/zcontrol-card.js` under dashboard **Resources** as a **JavaScript module**, then reload your browser. If you created the `www` folder for the first time, restart Home Assistant once.
+Download [zcontrol-card.js from the latest release](https://github.com/lyonsad/zcontrol-card/releases/latest/download/zcontrol-card.js) to `config/www/zcontrol-card.js`. Add `/local/zcontrol-card.js` under dashboard **Resources** as a **JavaScript module**, then reload your browser. If you created the `www` folder for the first time, restart Home Assistant once.
 
 ## Add a card
 
@@ -61,7 +62,7 @@ Home Assistant Core **2026.9.4**, frontend **20260826.7**, and Safari on macOS, 
 
 ## Troubleshooting
 
-- **Card not found:** check the resource URL and module type, then reload or clear the browser's frontend cache.
+- **Card not found after a HACS install:** reload your browser first. If it is still missing, check **Settings → Dashboards → three-dot menu → Resources** for `/hacsfiles/zcontrol-card/zcontrol-card.js`, type **JavaScript module**. Add it only if missing; enable **Advanced mode** in your profile if Resources is hidden. For YAML-managed resources, add the same URL with `type: module` to your resource configuration.
 - **Unknown readings:** check the entity IDs and integration. The card can only show readings the integration supplies.
 - **Data delayed:** check connectivity and the last heartbeat. The default threshold is 10 minutes; adjust `stale_after` if needed.
 - **Updates:** download the new version through HACS and reload your browser. For manual installs, replace the JavaScript file.
