@@ -24,9 +24,9 @@ Verified live: HACS installation, card picker, YAML configuration, both model pr
 
 ## Features
 
-- Purple 508, red APak, and teal generic headers with Home Assistant icons.
+- Purple 508 and teal generic headers, with a neutral APak header and red accent with Home Assistant icons.
 - Home Assistant theme typography, backgrounds, borders, and success/error colors; optional theme-only headers.
-- Inline battery voltage/current, pump current, float counts, runtimes, and Wi-Fi readings when those entities exist. Alarm count is optional; it always contributes to the summary when mapped.
+- Inline battery voltage/current, pump current, float activation counts, and runtimes when those entities exist. Wi-Fi appears in the compact diagnostics footer by default. Alarm count is optional; it always contributes to the summary when mapped.
 - Unknown, unavailable, offline, and delayed-data states. Last reported healthy states stop showing green checks when monitoring is offline or stale.
 - Standard Home Assistant more-info when you select a status or reading. No View button or pump commands.
 - Basic visual editor, plus YAML for custom entity mappings and layouts.
@@ -43,7 +43,7 @@ The 508 preset needs the corrected 508 status mappings and telemetry from a comp
 
 1. Open **HACS**, select the **three-dot menu → Custom repositories**.
 2. Enter `https://github.com/lyonsad/zcontrol-card`, choose **Dashboard** (called **Lovelace** in older HACS versions), and select **Add**.
-3. Search HACS for **Z-Control Card**, open it, and select **Download**. Choose the latest numbered release. No beta setting is required for `v0.1.0`.
+3. Search HACS for **Z-Control Card**, open it, and select **Download**. Choose the latest numbered release. No beta setting is required for `v0.1.1`.
 4. Accept **Reload** when HACS asks to reload your browser.
 5. Open **Settings → Dashboards → three-dot menu → Resources**. Confirm `/hacsfiles/zcontrol-card/zcontrol-card.js` is registered as **JavaScript module**. Enable **Advanced mode** in your HA profile if Resources is hidden. If HACS did not add it, add that URL yourself with type JavaScript module.
 6. Add and configure a card using the instructions below.
@@ -102,7 +102,9 @@ brand_colors: false
 metric_columns: 2
 ```
 
-Default branding uses model names, HA icons, and header accents. For a logo, place an image you are entitled to use in `config/www/`, then set `logo: /local/your-logo.png`. Failed images fall back to the model icon. Vendor artwork is not bundled. This independent community project is not an official Zoeller product; Zoeller, Aquanot, APak, and Z-Control names belong to their respective owners.
+Automatic metric tiles omit alarm count and Wi-Fi. The summary still uses the alarm count, and the footer shows Wi-Fi when available. An explicit `metrics` list controls exactly which tiles appear, so Wi-Fi can still be selected as a tile without also appearing in the footer. `show_metrics: false` hides both the tiles and automatic Wi-Fi diagnostics.
+
+Default branding uses model names, HA icons, and header accents. The 508 uses a pump icon and purple header; APak uses a neutral header with a red accent so branding does not compete with alarm warnings. For a logo, place an image you are entitled to use in `config/www/`, then set `logo: /local/your-logo.png`. Failed images fall back to the model icon. Vendor artwork is not bundled. This independent community project is not an official Zoeller product; Zoeller, Aquanot, APak, and Z-Control names belong to their respective owners.
 
 ## Entity overrides and selected readings
 
@@ -159,8 +161,8 @@ metrics:
 | `statuses` | model preset | Replace rows with `{entity, name?, invert?}` entries. |
 | `metrics` | existing mapped readings | Replace tiles with `{entity, name?}` entries. |
 | `metric_columns` | `2` | One, two, or three reading columns. |
-| `show_metrics` | `true` | Hide reading tiles. |
-| `show_heartbeat` | `true` | Hide footer; freshness checks still run. |
+| `show_metrics` | `true` | Show reading tiles and automatic Wi-Fi diagnostics. |
+| `show_heartbeat` | `true` | Show the heartbeat footer row; freshness checks still run when hidden. |
 | `stale_after` | `10` | Minutes after heartbeat to mark data delayed; `0` disables. |
 
 For prefix `sump_pump`, `battery` maps to `binary_sensor.sump_pump_battery`. Fields and suffixes:
@@ -199,7 +201,7 @@ The live-tested versions and controller coverage are listed above. The standalon
 - **Not available / Unknown:** check the exact entity ID and the integration’s state in HA. Override renamed entities. Unsupported controller readings cannot be supplied by the card.
 - **Data delayed:** check connectivity and heartbeat, then adjust `stale_after` to the controller’s expected reporting interval if necessary. `0` disables this freshness check.
 - **Duplicate alarm tile:** the default layout omits it. Remove an `alarm_count` entry from your explicit `metrics` list if you also want it hidden there.
-- **Updating:** use HACS to download a new release and reload your browser. Manual users replace the JavaScript file and refresh; a resource query string such as `?v=0.1.0` can help with caching.
+- **Updating:** use HACS to download a new release and reload your browser. Manual users replace the JavaScript file and refresh; a resource query string such as `?v=0.1.1` can help with caching.
 - **Removing:** delete the dashboard card, remove its resource, and uninstall Z-Control Card through HACS (or delete the manually installed file). This does not uninstall the separate Z-Control integration.
 
 See [HACS custom repositories](https://hacs.xyz/docs/faq/custom_repositories/) and [HA resource registration](https://developers.home-assistant.io/docs/frontend/custom-ui/registering-resources/) for the platform instructions.

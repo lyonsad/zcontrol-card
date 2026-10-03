@@ -91,3 +91,20 @@ test('invalid configuration is rejected before rendering', () => {
   for (const config of [{ model: 'other' }, { entity_prefix: 'sensor.bad' }, { entities: { unknown: 'sensor.test' } }, { entities: { battery: 'bad' } }, { statuses: [{ entity: 'binary_sensor.x', invert: 'yes' }] }, { metric_columns: 4 }, { stale_after: -1 }, { logo: 'javascript:alert(1)' }, { logo: '//remote/logo' }, { brand_colors: 'yes' }]) assert.throws(() => normalizeConfig(config));
   assert.doesNotThrow(() => normalizeConfig({ logo: '/local/logo.png', brand_colors: false }));
 });
+
+test('automatic Wi-Fi diagnostics do not duplicate explicit tiles or hidden metrics', () => {
+  for (const model of ['508', 'apak', 'generic']) {
+    const { config, hass } = fixture(model);
+    const wifi = config.entities.wifi_signal;
+    hass.states[wifi] = state('-63', { unit_of_measurement: 'dBm' });
+    const data = cardData(config, hass, now);
+    assert.ok(data.metrics.every(row => row.entity !== wifi));
+    assert.equal(data.diagnostics[0].entity, wifi);
+    assert.equal(cardData({ ...config, show_metrics: false }, hass, now).diagnostics.length, 0);
+    const selected = cardData({ ...config, metrics: [{ entity: wifi }] }, hass, now);
+    assert.equal(selected.metrics[0].entity, wifi);
+    assert.equal(selected.diagnostics.length, 0);
+    delete hass.states[wifi];
+    assert.equal(cardData(config, hass, now).diagnostics.length, 0);
+  }
+});

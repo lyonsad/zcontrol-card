@@ -1,9 +1,9 @@
 /** Z-Control Card: a dependency-free, read-only Home Assistant dashboard card. */
-export const VERSION = "0.1.0";
+export const VERSION = "0.1.1";
 
 const PRESETS = {
   "508": {
-    title: "Aquanot 508 Fit", subtitle: "Battery backup system", icon: "mdi:water-pump",
+    title: "Aquanot 508 Fit", subtitle: "Battery backup system", icon: "mdi:pump",
     color: "#71608e", statuses: ["system_ready", "battery", "dc_pump", "float_status", "ac_power"],
   },
   apak: {
@@ -28,8 +28,8 @@ const FIELDS = {
   battery_voltage: ["sensor", "battery_voltage", "Battery voltage"],
   battery_current: ["sensor", "battery_current", "Battery current"],
   dc_pump_current: ["sensor", "dc_pump_current", "DC pump current"],
-  operational_float_count: ["sensor", "operational_float_count", "Operational float"],
-  high_water_float_count: ["sensor", "high_water_float_count", "High-water float"],
+  operational_float_count: ["sensor", "operational_float_count", "Operational float activations"],
+  high_water_float_count: ["sensor", "high_water_float_count", "High-water float activations"],
   pump_runtime: ["sensor", "pump_runtime", "Pump runtime"],
   system_run_time: ["sensor", "system_run_time", "System runtime"],
   up_time: ["sensor", "up_time", "Uptime"],
@@ -37,7 +37,7 @@ const FIELDS = {
   last_heartbeat: ["sensor", "last_heartbeat", "Last heartbeat"],
 };
 const METRICS = ["battery_voltage", "battery_current", "dc_pump_current",
-  "operational_float_count", "high_water_float_count", "pump_runtime", "system_run_time", "up_time", "wifi_signal"];
+  "operational_float_count", "high_water_float_count", "pump_runtime", "system_run_time", "up_time"];
 
 export function normalizeConfig(config) {
   if (!config || typeof config !== "object" || Array.isArray(config)) throw new Error("Supply a card configuration.");
@@ -110,7 +110,11 @@ export function cardData(config, hass, now = Date.now()) {
   if (stale) summary = { kind: "unknown", label: "Data delayed" };
   if (offline) summary = { kind: "unknown", label: "Offline" };
   if (alarm) summary = { kind: "alarm", label: offline || stale ? "Last reported alarm" : "Alarm reported" };
-  return { rows, metrics, summary, online, heartbeat, age, stale, offline };
+  // Explicit metric lists keep their chosen layout, including Wi-Fi when requested.
+  const wifiEntity = config.entities.wifi_signal;
+  const diagnostics = config.metrics === undefined && config.show_metrics !== false && wifiEntity && states[wifiEntity]
+    ? [{ entity: wifiEntity, name: FIELDS.wifi_signal[2] }] : [];
+  return { rows, metrics, diagnostics, summary, online, heartbeat, age, stale, offline };
 }
 export function formatDuration(value, unit) {
   const factors = { ms: .001, s: 1, min: 60, h: 3600, d: 86400 };
@@ -142,10 +146,12 @@ export function formatReading(state, hass) {
 const STYLES = `
   :host { display:block; height:100%; --zc-accent:var(--primary-color); }
   ha-card { overflow:hidden; height:100%; box-sizing:border-box; color:var(--primary-text-color); }
-  .header { padding:20px; display:flex; gap:14px; align-items:center; border-bottom:1px solid var(--divider-color); }
+  .header { padding:16px; display:flex; gap:14px; align-items:center; border-bottom:1px solid var(--divider-color); }
   .brand .header { background:var(--zc-accent); color:#fff; border:0; }
-  .header-icon { --mdc-icon-size:40px; color:var(--zc-accent); flex-shrink:0; }
+  .header-icon { --mdc-icon-size:36px; color:var(--zc-accent); flex-shrink:0; }
   .brand .header-icon { color:inherit; }
+  .brand.apak .header { background:var(--secondary-background-color); color:var(--primary-text-color); border-top:4px solid var(--zc-accent); }
+  .brand.apak .header-icon { color:var(--zc-accent); }
   .logo { max-height:56px; max-width:155px; object-fit:contain; }
   .head-text { min-width:0; flex:1; }
   h2 { margin:0; font-size:22px; line-height:1.25; font-weight:600; overflow-wrap:anywhere; }
@@ -161,7 +167,7 @@ const STYLES = `
   button:disabled { cursor:default; }
   button:focus-visible { outline:2px solid var(--primary-color); outline-offset:2px; }
   button:hover:not(:disabled) { background:var(--secondary-background-color); }
-  .status { display:flex; align-items:center; gap:12px; padding:10px 0; border-radius:var(--ha-border-radius-sm,8px); width:100%; }
+  .status { display:flex; align-items:center; gap:12px; padding:8px 0; min-height:44px; box-sizing:border-box; border-radius:var(--ha-border-radius-sm,8px); width:100%; }
   .status ha-icon { --mdc-icon-size:26px; flex-shrink:0; }
   .status-name { flex:1; font-size:15px; }
   .status-value { font-size:12px; color:var(--secondary-text-color); }
@@ -172,7 +178,8 @@ const STYLES = `
   .metric { padding:10px 12px; border-radius:var(--ha-border-radius-sm,8px); background:var(--secondary-background-color); min-width:0; }
   .metric-name { display:block; font-size:11px; color:var(--secondary-text-color); line-height:1.4; margin-bottom:4px; }
   .metric-value { display:block; font-size:17px; font-weight:500; overflow-wrap:anywhere; }
-  .footer { margin-top:16px; padding-top:12px; border-top:1px solid var(--divider-color); display:flex; align-items:center; gap:8px; font-size:11px; color:var(--secondary-text-color); }
+  .footer { margin-top:16px; padding-top:12px; border-top:1px solid var(--divider-color); display:grid; gap:8px; font-size:11px; color:var(--secondary-text-color); }
+  .diagnostic { display:flex; align-items:center; gap:8px; padding:0; font-size:inherit; color:inherit; }
   .footer ha-icon { --mdc-icon-size:15px; flex-shrink:0; }
   .footer span { overflow-wrap:anywhere; }
   @media(max-width:350px) { .header { padding:16px; } .body { padding:12px 16px 16px; } h2 { font-size:20px; } .metric-value { font-size:15px; } }
@@ -209,11 +216,11 @@ export class ZControlCard extends HTMLElement {
     const config = this._config;
     const preset = PRESETS[config.model];
     const data = cardData(config, this._hass);
-    const signature = JSON.stringify([config, data.rows, data.metrics.map(row => [row, this._hass.states[row.entity]]), data.summary, data.online, data.heartbeat, data.stale, data.offline, this._hass.locale]);
+    const signature = JSON.stringify([config, data.rows, data.metrics.map(row => [row, this._hass.states[row.entity]]), data.diagnostics.map(row => [row, this._hass.states[row.entity]]), data.summary, data.online, data.heartbeat, data.stale, data.offline, this._hass.locale]);
     if (signature === this._signature) return;
     this._signature = signature;
     const focusedEntity = this.shadowRoot.activeElement?.dataset.entity;
-    const card = element("ha-card", config.brand_colors === false ? "" : "brand");
+    const card = element("ha-card", config.brand_colors === false ? "" : `brand ${config.model}`);
     card.style.setProperty("--zc-accent", config.accent_color ?? (config.brand_colors === false ? "var(--primary-color)" : preset.color));
     card.style.setProperty("--zc-columns", config.metric_columns);
     const style = element("style", "", STYLES);
@@ -244,7 +251,7 @@ export class ZControlCard extends HTMLElement {
       const staleOK = row.kind === "ok" && (data.offline || data.stale);
       const shown = staleOK ? { kind: "unknown", icon: "mdi:clock-alert-outline", label: "Last reported OK" } : row;
       const indicator = icon(shown.icon); indicator.className = shown.kind;
-      button.append(indicator, element("span", "status-name", name), element("span", "status-value", shown.label));
+      button.append(indicator, element("span", "status-name", name), element("span", "status-value", shown.kind === "ok" ? "" : shown.label));
       button.disabled = !row.entity; button.setAttribute("aria-label", `${name}: ${shown.label}. Show details.`);
       button.addEventListener("click", () => moreInfo(this, row.entity)); statuses.append(button);
     }
@@ -264,16 +271,27 @@ export class ZControlCard extends HTMLElement {
       }
       body.append(metrics);
     }
-    if (config.show_heartbeat !== false) {
+    if (config.show_heartbeat !== false || data.diagnostics.length) {
       const footer = element("div", "footer");
-      let label = "Last heartbeat unknown";
-      const timestamp = Date.parse(data.heartbeat?.state);
-      if (Number.isFinite(timestamp)) {
-        const formatted = this._hass.formatEntityState?.(data.heartbeat) ?? new Intl.DateTimeFormat(this._hass.locale?.language ?? "en", { dateStyle: "medium", timeStyle: "short", timeZone: this._hass.config?.time_zone }).format(timestamp);
-        label = `Last heartbeat ${formatted}`;
-        if (data.stale) label += " · Data delayed";
+      for (const row of data.diagnostics) {
+        const value = formatReading(this._hass.states[row.entity], this._hass);
+        const diagnostic = element("button", "diagnostic"); diagnostic.type = "button"; diagnostic.dataset.entity = row.entity;
+        diagnostic.append(icon("mdi:wifi"), element("span", "", `${row.name}: ${value}`));
+        diagnostic.setAttribute("aria-label", `${row.name}: ${value}. Show details.`);
+        diagnostic.addEventListener("click", () => moreInfo(this, row.entity)); footer.append(diagnostic);
       }
-      footer.append(icon("mdi:clock-outline"), element("span", "", label)); body.append(footer);
+      if (config.show_heartbeat !== false) {
+        let label = "Last heartbeat unknown";
+        const timestamp = Date.parse(data.heartbeat?.state);
+        if (Number.isFinite(timestamp)) {
+          const formatted = this._hass.formatEntityState?.(data.heartbeat) ?? new Intl.DateTimeFormat(this._hass.locale?.language ?? "en", { dateStyle: "medium", timeStyle: "short", timeZone: this._hass.config?.time_zone }).format(timestamp);
+          label = `Last heartbeat ${formatted}`;
+          if (data.stale) label += " · Data delayed";
+        }
+        const heartbeatRow = element("div", "diagnostic");
+        heartbeatRow.append(icon("mdi:clock-outline"), element("span", "", label)); footer.append(heartbeatRow);
+      }
+      body.append(footer);
     }
     card.append(header, body);
     // All dynamic strings use textContent; neither entity states nor YAML inject HTML.
