@@ -1,5 +1,5 @@
 /** Z-Control Card: a dependency-free, read-only Home Assistant dashboard card. */
-export const VERSION = "0.1.0-beta.2";
+export const VERSION = "0.1.0";
 
 const PRESETS = {
   "508": {
@@ -36,7 +36,7 @@ const FIELDS = {
   wifi_signal: ["sensor", "wifi_signal", "Wi-Fi signal"],
   last_heartbeat: ["sensor", "last_heartbeat", "Last heartbeat"],
 };
-const METRICS = ["battery_voltage", "battery_current", "dc_pump_current", "alarm_count",
+const METRICS = ["battery_voltage", "battery_current", "dc_pump_current",
   "operational_float_count", "high_water_float_count", "pump_runtime", "system_run_time", "up_time", "wifi_signal"];
 
 export function normalizeConfig(config) {

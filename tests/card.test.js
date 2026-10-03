@@ -48,6 +48,17 @@ test('catch-all alarms remain visible during stale or offline monitoring', () =>
   assert.equal(cardData(config, hass, now).summary.label, 'Data delayed');
   assert.equal(cardData({ ...config, stale_after: 0 }, hass, now).summary.kind, 'ok');
 });
+test('default readings omit duplicate alarm count but explicitly selected counts remain available', () => {
+  for (const model of ['508', 'apak', 'generic']) {
+    const { config, hass } = fixture(model);
+    hass.states[config.entities.alarm_count] = state('3');
+    const data = cardData(config, hass, now);
+    assert.ok(data.metrics.every(row => row.entity !== config.entities.alarm_count));
+    assert.equal(data.summary.kind, 'alarm');
+    const selected = { ...config, metrics: [{ entity: config.entities.alarm_count, name: 'Active alarms' }] };
+    assert.equal(cardData(selected, hass, now).metrics[0].entity, config.entities.alarm_count);
+  }
+});
 test('generic custom statuses support inverted healthy sensors without changing defaults', () => {
   const config = normalizeConfig({ model: 'generic', statuses: [{ entity: 'binary_sensor.ready', name: 'Ready', invert: true }] });
   assert.equal(cardData(config, { states: { 'binary_sensor.ready': state('on') } }, now).summary.kind, 'ok');

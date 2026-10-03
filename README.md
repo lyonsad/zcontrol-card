@@ -4,53 +4,88 @@ Home Assistant dashboard cards for **Aquanot 508 Fit**, **APak**, and generic su
 
 **Integration and credit:** These cards are designed to accompany [levineds/zcontrol-ha](https://github.com/levineds/zcontrol-ha), the public Z-Control integration for Home Assistant. Thanks to [levineds](https://github.com/levineds) for creating and maintaining the integration that makes these entities available. Install that integration separately; this repository provides the dashboard card, not the cloud connection.
 
-![508, APak, and generic cards with synthetic data](docs/preview-light.png)
+## Live screenshots
 
-![Cards in a dark theme](docs/preview-dark.png)
+These are actual Home Assistant cards connected to a Zoeller 508 and APak. Captured from the installed **v0.1.0** card on October 3, 2026; the image is cropped to the cards only, with no alteration to their content. The development demo uses synthetic data and is kept separately under `demo/`.
+
+<img src="docs/home-assistant-live.png" alt="Actual 508 and APak cards running in Home Assistant" width="520">
+
+## Tested compatibility
+
+| Component | Verified version / coverage |
+| --- | --- |
+| Home Assistant Core | **2026.9.4** |
+| Home Assistant frontend | **20260826.7**, Safari on macOS |
+| Installation | Home Assistant OS; HACS custom Dashboard repository |
+| Controllers | Aquanot 508 Fit and APak, live monitoring entities |
+| Integration | Z-Control integration test build `1.1.0-test.4` with corrected 508 mappings |
+
+Verified live: HACS installation, card picker, YAML configuration, both model presets, normal status, telemetry updates, heartbeat display, duration units, and entity more-info. Alarm/offline/stale/unknown behavior has automated and simulated browser coverage; physical alarm events were not deliberately triggered. Generic controllers have simulated coverage only. **HA 2024.11 is the declared minimum, not a live-tested version.**
 
 ## Features
 
 - Purple 508, red APak, and teal generic headers with Home Assistant icons.
 - Home Assistant theme typography, backgrounds, borders, and success/error colors; optional theme-only headers.
-- Inline battery voltage/current, pump current, float counts, runtimes, alarm count, and Wi-Fi readings when those entities exist.
+- Inline battery voltage/current, pump current, float counts, runtimes, and Wi-Fi readings when those entities exist. Alarm count is optional; it always contributes to the summary when mapped.
 - Unknown, unavailable, offline, and delayed-data states. Last reported healthy states stop showing green checks when monitoring is offline or stale.
 - Standard Home Assistant more-info when you select a status or reading. No View button or pump commands.
 - Basic visual editor, plus YAML for custom entity mappings and layouts.
 
 One JavaScript module, no runtime dependencies, telemetry, or extra cloud requests. Optional HTTPS logo URLs request an image from that host; local `/local/` images keep branding local.
 
-## Install
+## Before you install
 
-The first version is a **prerelease for testing**. Implementation changes are reviewed through a pull request; a release asset lets you test before merging.
+Install and configure [levineds/zcontrol-ha](https://github.com/levineds/zcontrol-ha) first. Confirm its device entities have readings in Home Assistant. This card reads those entities; it does not ask for Z-Control credentials or connect to the portal.
 
-### HACS
+The 508 preset needs the corrected 508 status mappings and telemetry from a compatible integration version. See [upstream 508 support](https://github.com/levineds/zcontrol-ha/pull/1) for its current availability. Older integration versions may show missing or unknown readings; installing the card does not fix integration mappings.
 
-1. Open HACS **Custom repositories** and add `https://github.com/lyonsad/zcontrol-card` with type **Dashboard** (older versions call this **Lovelace**).
-2. Find **Z-Control Card** and download it. If necessary, enable prerelease/beta versions in the version picker and choose `v0.1.0-beta.2`.
-3. Confirm the dashboard resource exists as a JavaScript module: `/hacsfiles/zcontrol-card/zcontrol-card.js`.
-4. Reload the browser, edit a dashboard, and add **Z-Control Card**, or paste an example into a manual card.
+## Install with HACS (recommended)
 
-See [HACS custom repositories](https://hacs.xyz/docs/faq/custom_repositories/) and [Home Assistant resources](https://developers.home-assistant.io/docs/frontend/custom-ui/registering-resources/). This repository is not yet in the HACS default store.
+1. Open **HACS**, select the **three-dot menu → Custom repositories**.
+2. Enter `https://github.com/lyonsad/zcontrol-card`, choose **Dashboard** (called **Lovelace** in older HACS versions), and select **Add**.
+3. Search HACS for **Z-Control Card**, open it, and select **Download**. Choose the latest numbered release. No beta setting is required for `v0.1.0`.
+4. Accept **Reload** when HACS asks to reload your browser.
+5. Open **Settings → Dashboards → three-dot menu → Resources**. Confirm `/hacsfiles/zcontrol-card/zcontrol-card.js` is registered as **JavaScript module**. Enable **Advanced mode** in your HA profile if Resources is hidden. If HACS did not add it, add that URL yourself with type JavaScript module.
+6. Add and configure a card using the instructions below.
 
-### Manual
+The implementation is on **`main`**. HACS normally installs a numbered release for repeatable updates; its card asset matches the published code on `main`. To test the current branch directly, use **Need a different version? → main** in HACS. `main` is available, but can include changes newer than a numbered release. This is a custom repository, not a HACS default-store listing.
 
-Download `zcontrol-card.js` from the [releases page](https://github.com/lyonsad/zcontrol-card/releases), copy it to `config/www/zcontrol-card.js`, and add `/local/zcontrol-card.js` as a **JavaScript module** resource. If you create the `www` folder for the first time, restart Home Assistant once so it can serve that directory. Reload your browser. Use a version query string when updating if the old file remains cached.
+## Install manually from main
 
-## Quick start
+1. Download [zcontrol-card.js from main](https://raw.githubusercontent.com/lyonsad/zcontrol-card/main/zcontrol-card.js) and save it as `config/www/zcontrol-card.js` (not an HTML GitHub page).
+2. If you created `www` for the first time, restart Home Assistant once so it can serve the folder. Otherwise a browser refresh is enough.
+3. Under **Settings → Dashboards → three-dot menu → Resources**, add `/local/zcontrol-card.js` with type **JavaScript module**. Advanced mode may be needed to see Resources.
+4. Reload the browser, then add a card. For a fixed version, download the same file from [releases](https://github.com/lyonsad/zcontrol-card/releases/latest).
 
-Replace the prefix with your actual entity prefix. This is a naming convenience, not device discovery. Check entity IDs in Home Assistant; overrides support renamed entities.
+## Add and configure a card
+
+1. Open your dashboard and select **Edit dashboard → Add card → By card**.
+2. Choose **Z-Control Card**. In its visual editor, choose the model and enter the entity prefix. Titles, subtitle, logo path, reading columns, and brand colors are optional.
+3. Select **Save**, then **Done**. For explicit entity mappings or custom rows, use **Show code editor**. Alternatively choose **Manual** in the card picker and paste an example below.
+
+### Find your entity prefix
+
+Open **Settings → Devices & services → Entities**, find one of the integration’s entities, and inspect its entity ID (also available in the entity’s settings dialog).
+
+For `binary_sensor.basement_sump_battery`, remove the domain `binary_sensor.` and suffix `_battery`: the prefix is **`basement_sump`**. Enter that exact prefix, without a domain. Confirm other entities follow the same naming pattern. The prefix does not discover devices; renamed or differently named entities need `entities` overrides below.
+
+### Aquanot 508 Fit
 
 ```yaml
 type: custom:zcontrol-card
 model: '508'
-entity_prefix: sump_pump
+entity_prefix: basement_sump
 ```
+
+### APak
 
 ```yaml
 type: custom:zcontrol-card
 model: apak
-entity_prefix: sump_alarm
+entity_prefix: basement_alarm
 ```
+
+Use [examples/cards.yaml](examples/cards.yaml) to add two devices as one group, replacing its sample prefixes with your own.
 
 The 508 preset uses **System Ready, Battery, DC Pump, Float Status, and AC Power**. It excludes Input 1/Input 2: generic inputs are not substitutes for the 508 float/system alarm mappings. APak shows **Input 1, Input 2, AC Power, and Battery**. Labels do not identify physical wiring; name each input according to its connected sensor.
 
@@ -71,7 +106,7 @@ Default branding uses model names, HA icons, and header accents. For a logo, pla
 
 ## Entity overrides and selected readings
 
-Explicit `metrics` replace automatic readings, controlling order and card height. Missing explicitly selected entities display **Unknown**. Set an entity field to `false` to disable a preset binding. Explicit `statuses` replace all preset rows.
+The default readings omit alarm count because the status summary already communicates alarms. The mapped count still contributes to that summary. Add it explicitly to `metrics` if you want a numeric tile. Explicit `metrics` replace automatic readings, controlling order and card height. Missing explicitly selected entities display **Unknown**. Set an entity field to `false` to disable a preset binding. Explicit `statuses` replace all preset rows.
 
 ```yaml
 type: custom:zcontrol-card
@@ -156,7 +191,18 @@ python3 -m http.server 8766 --bind 127.0.0.1
 
 Open `http://127.0.0.1:8766/demo/` for synthetic healthy/alarm/offline/unknown data and theme/branding controls. Demo icons are simplified stand-ins; live cards use `ha-icon`. Tests cover the three presets, polarity/inversion, overrides, unknown states, catch-all alarms, freshness, durations, formatting, and configuration validation. GitHub CI repeats syntax and unit checks.
 
-Initial browser validation uses simulated entities. The generic preset has no physical-controller validation yet. The real HA card picker, visual editor, and installed integration still need beta testing. The declared minimum is HA 2024.11; that minimum has not been tested live.
+The live-tested versions and controller coverage are listed above. The standalone demo remains useful for simulated alarms and generic configurations. CI runs the same syntax and unit checks.
+
+## Troubleshooting and updates
+
+- **Custom element doesn’t exist:** confirm the JavaScript module resource URL, then reload the browser. After an update, force-refresh or clear that site’s frontend cache if the old file remains loaded. Do not install both the manual and HACS resource simultaneously.
+- **Not available / Unknown:** check the exact entity ID and the integration’s state in HA. Override renamed entities. Unsupported controller readings cannot be supplied by the card.
+- **Data delayed:** check connectivity and heartbeat, then adjust `stale_after` to the controller’s expected reporting interval if necessary. `0` disables this freshness check.
+- **Duplicate alarm tile:** the default layout omits it. Remove an `alarm_count` entry from your explicit `metrics` list if you also want it hidden there.
+- **Updating:** use HACS to download a new release and reload your browser. Manual users replace the JavaScript file and refresh; a resource query string such as `?v=0.1.0` can help with caching.
+- **Removing:** delete the dashboard card, remove its resource, and uninstall Z-Control Card through HACS (or delete the manually installed file). This does not uninstall the separate Z-Control integration.
+
+See [HACS custom repositories](https://hacs.xyz/docs/faq/custom_repositories/) and [HA resource registration](https://developers.home-assistant.io/docs/frontend/custom-ui/registering-resources/) for the platform instructions.
 
 ## Credits and license
 
