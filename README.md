@@ -6,7 +6,7 @@ Home Assistant dashboard cards for **Aquanot 508 Fit**, **APak**, and generic su
 
 ## Live screenshots
 
-These are actual Home Assistant cards connected to a Zoeller 508 and APak. Captured from the installed **v0.1.1** card on October 3, 2026; the image is cropped to the cards only, with no alteration to their content. The development demo uses synthetic data and is kept separately under `demo/`.
+These are actual Home Assistant cards connected to a Zoeller 508 and APak. Captured from the installed **v0.1.1** card on October 3, 2026; the image is cropped to the cards only, with no alteration to their content.
 
 <img src="docs/home-assistant-live.png" alt="Actual 508 and APak cards running in Home Assistant" width="520">
 
@@ -20,7 +20,7 @@ These are actual Home Assistant cards connected to a Zoeller 508 and APak. Captu
 | Controllers | Aquanot 508 Fit and APak, live monitoring entities |
 | Integration | Z-Control integration test build `1.1.0-test.4` with corrected 508 mappings |
 
-Verified live: HACS installation, card picker, YAML configuration, both model presets, normal status, telemetry updates, heartbeat display, duration units, and entity more-info (including the Wi-Fi diagnostics row). Alarm/offline/stale/unknown behavior has automated and simulated browser coverage; physical alarm events were not deliberately triggered. Generic controllers have simulated coverage only. **HA 2024.11 is the declared minimum, not a live-tested version.**
+Verified live: HACS installation, card picker, YAML configuration, both model presets, normal status, telemetry updates, heartbeat display, duration units, and entity more-info (including the Wi-Fi diagnostics row). Alarm/offline/stale/unknown behavior has automated test coverage; physical alarm events were not deliberately triggered. Generic controllers have automated test coverage only. **HA 2024.11 is the declared minimum, not a live-tested version.**
 
 ## Features
 
@@ -188,12 +188,9 @@ Node 20+ for development; no package installation or build step:
 ```sh
 node --check zcontrol-card.js
 node --test
-python3 -m http.server 8766 --bind 127.0.0.1
 ```
 
-Open `http://127.0.0.1:8766/demo/` for synthetic healthy/alarm/offline/unknown data and theme/branding controls. Demo icons are simplified stand-ins; live cards use `ha-icon`. Tests cover the three presets, polarity/inversion, overrides, unknown states, catch-all alarms, freshness, durations, formatting, and configuration validation. GitHub CI repeats syntax and unit checks.
-
-The live-tested versions and controller coverage are listed above. The standalone demo remains useful for simulated alarms and generic configurations. CI runs the same syntax and unit checks.
+Tests cover the three presets, polarity/inversion, overrides, unknown states, catch-all alarms, freshness, durations, formatting, configuration validation, and Wi-Fi diagnostics. GitHub CI repeats syntax and unit checks. Live-tested versions and controller coverage are listed above.
 
 ## Troubleshooting and updates
 
