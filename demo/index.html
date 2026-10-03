@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Z-Control Card preview</title>
+<style>
+  :root { font-family:system-ui,sans-serif; color-scheme:light; --primary-color:#03a9f4; --primary-text-color:#212121; --secondary-text-color:#667078; --card-background-color:#fff; --secondary-background-color:#f3f5f7; --divider-color:#e2e5e9; --success-color:#25846d; --error-color:#db4437; --ha-card-border-radius:14px; }
+  body { margin:0; padding:32px; background:#eef1f5; color:var(--primary-text-color); }
+  body.dark { color-scheme:dark; background:#101418; --primary-text-color:#e9edf0; --secondary-text-color:#a2adb5; --card-background-color:#1c2228; --secondary-background-color:#252e36; --divider-color:#35404a; --success-color:#59c49a; }
+  main { max-width:1200px; margin:auto; } h1 { font-size:26px; margin:0 0 8px; } p { color:var(--secondary-text-color); margin:0 0 20px; }
+  nav { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; } nav button { font:inherit; padding:9px 15px; border:1px solid var(--divider-color); border-radius:8px; background:var(--card-background-color); color:inherit; cursor:pointer; }
+  .cards { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; align-items:start; }
+  ha-card { display:block; background:var(--card-background-color); border:1px solid var(--divider-color); border-radius:var(--ha-card-border-radius); box-shadow:0 2px 6px #00000010; }
+  @media(max-width:950px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}} @media(max-width:600px){body{padding:16px}.cards{grid-template-columns:1fr}}
+</style>
+<main><h1>Z-Control Card</h1><p>Three model presets · Home Assistant themes · Readings at a glance</p>
+<nav><button id="healthy">Healthy</button><button id="alarm">Alarm</button><button id="offline">Offline</button><button id="unknown">Unknown</button><button id="theme">Light / dark</button><button id="branding">Brand colors / theme</button></nav>
+<div class="cards" id="cards"></div><p style="margin-top:24px">Preview with synthetic data and simplified icon stand-ins. Live cards use Home Assistant’s own icons and entities.</p><p id="details" aria-live="polite"></p></main>
+<script type="module">
+  import '../zcontrol-card.js';
+  customElements.define('ha-card', class extends HTMLElement { connectedCallback() { Object.assign(this.style,{display:'block',background:'var(--card-background-color)',border:'1px solid var(--divider-color)',borderRadius:'var(--ha-card-border-radius)',boxShadow:'0 2px 6px #00000010'}); } });
+  // Demo-only stand-in; Home Assistant supplies its real ha-icon component.
+  customElements.define('ha-icon', class extends HTMLElement {
+    connectedCallback() {
+      const name = this.getAttribute('icon') ?? '';
+      const paths = name.includes('check') ? 'M9 16.2 4.8 12l-1.4 1.4L9 19l12-12-1.4-1.4Z' : name.includes('alert') ? 'M12 2 1 21h22L12 2Zm-1 7h2v6h-2V9Zm0 8h2v2h-2v-2Z' : name.includes('water') ? 'M12 2C9 7 5 10 5 15a7 7 0 0 0 14 0c0-5-4-8-7-13Z' : name.includes('cloud') ? 'M19 10a7 7 0 0 0-13-2 5 5 0 0 0 0 10h13a4 4 0 0 0 0-8Z' : 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1 4h2v7h-2V6Zm0 9h2v2h-2v-2Z';
+      const svg = document.createElementNS('http://www.w3.org/2000/svg','svg'); svg.setAttribute('viewBox','0 0 24 24'); svg.style.cssText='width:var(--mdc-icon-size,24px);height:var(--mdc-icon-size,24px);fill:currentColor;display:block';
+      const path = document.createElementNS(svg.namespaceURI,'path'); path.setAttribute('d',paths); svg.append(path); this.append(svg);
+    }
+  });
+  const configs = [{model:'508',entity_prefix:'demo_508'}, {model:'apak',entity_prefix:'demo_apak'}, {model:'generic',title:'Sump Monitor',entity_prefix:'demo_generic',statuses:[{entity:'binary_sensor.demo_generic_high_water',name:'High water'},{entity:'binary_sensor.demo_generic_ac_power',name:'AC power'},{entity:'binary_sensor.demo_generic_battery',name:'Battery'}]}];
+  const cards = configs.map(config => {const card=document.createElement('zcontrol-card');card.setConfig(config);document.querySelector('#cards').append(card);return card;});
+  let branded=true;
+  function update(mode='healthy') {
+    const states={};const add=(entity,value,attributes={})=>states[entity]={state:String(value),attributes};
+    for(const config of configs){const p=config.entity_prefix;
+      for(const suffix of ['system_ready_alarm','battery','dc_pump_alarm','float_status_alarm','ac_power','input_1','input_2','high_water'])add(`binary_sensor.${p}_${suffix}`,mode==='unknown'?'unknown':'off');
+      add(`binary_sensor.${p}_online`,mode==='offline'?'off':'on');add(`sensor.${p}_last_heartbeat`,new Date().toISOString());add(`sensor.${p}_alarm_count`,mode==='alarm'?1:0);
+      add(`sensor.${p}_wifi_signal`,-61,{unit_of_measurement:'dBm'});
+      if(config.model==='508'){add(`sensor.${p}_battery_voltage`,12.73,{device_class:'voltage',unit_of_measurement:'V'});add(`sensor.${p}_battery_current`,0,{unit_of_measurement:'A'});add(`sensor.${p}_dc_pump_current`,0,{unit_of_measurement:'A'});add(`sensor.${p}_operational_float_count`,18);add(`sensor.${p}_high_water_float_count`,2);add(`sensor.${p}_pump_runtime`,4,{device_class:'duration',unit_of_measurement:'min'});add(`sensor.${p}_system_run_time`,62,{device_class:'duration',unit_of_measurement:'h'});add(`sensor.${p}_up_time`,1.5,{device_class:'duration',unit_of_measurement:'d'});}
+      if(mode==='alarm')add(`binary_sensor.${p}_${config.model==='508'?'float_status_alarm':config.model==='apak'?'input_1':'high_water'}`,'on');
+    }
+    for(const card of cards)card.hass={states,locale:{language:'en'},config:{time_zone:'UTC'}};
+  }
+  for(const mode of ['healthy','alarm','offline','unknown'])document.getElementById(mode).onclick=()=>update(mode);
+  document.getElementById('theme').onclick=()=>document.body.classList.toggle('dark');
+  document.getElementById('branding').onclick=()=>{branded=!branded;cards.forEach((card,i)=>card.setConfig({...configs[i],brand_colors:branded}));};
+  document.addEventListener('hass-more-info',event=>document.getElementById('details').textContent=`Home Assistant opens details for ${event.detail.entityId}`);
+  update();
+</script>
+</html>

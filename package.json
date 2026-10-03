@@ -1,0 +1,8 @@
+{
+  "name": "zcontrol-card",
+  "version": "0.1.0-beta.2",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node --test", "check": "node --check zcontrol-card.js" },
+  "engines": { "node": ">=20" }
+}
