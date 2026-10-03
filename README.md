@@ -20,11 +20,11 @@ Configure the Z-Control integration first and confirm its entities have readings
 
 HACS normally registers the JavaScript resource automatically.
 
-HACS installs numbered releases by default. To use `main`, select **Need a different version? → main**. This repository must be added manually; it is not in the HACS default store.
+This repository must be added manually; it is not in the HACS default store.
 
 ### Manual
 
-Download [zcontrol-card.js from main](https://raw.githubusercontent.com/lyonsad/zcontrol-card/main/zcontrol-card.js) or a [release](https://github.com/lyonsad/zcontrol-card/releases/latest) to `config/www/zcontrol-card.js`. Add `/local/zcontrol-card.js` under dashboard **Resources** as a **JavaScript module**, then reload your browser. If you created the `www` folder for the first time, restart Home Assistant once.
+Download [zcontrol-card.js from the latest release](https://github.com/lyonsad/zcontrol-card/releases/latest/download/zcontrol-card.js) to `config/www/zcontrol-card.js`. Add `/local/zcontrol-card.js` under dashboard **Resources** as a **JavaScript module**, then reload your browser. If you created the `www` folder for the first time, restart Home Assistant once.
 
 ## Add a card
 
