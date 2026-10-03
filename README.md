@@ -1,8 +1,13 @@
 # Z-Control Card
 
-A Home Assistant dashboard card for Zoeller Z-Control devices, with Aquanot
-508, APak, and generic presets. Implementation and preview are being prepared
-on the `feat/status-card` branch and will be submitted for review.
+Theme-aware Home Assistant dashboard cards for Aquanot 508 Fit, APak, and generic sump monitoring, with readings displayed directly in the card.
 
-An independent community project, not affiliated with Zoeller. Uses Home
-Assistant entities; it does not connect to the Z-Control cloud itself.
+**Integration and credit:** This card accompanies [levineds/zcontrol-ha](https://github.com/levineds/zcontrol-ha). Thanks to [levineds](https://github.com/levineds) for creating and maintaining the public Z-Control integration that supplies the Home Assistant device entities. Install that integration separately.
+
+The initial implementation is being reviewed on [feat/status-card](https://github.com/lyonsad/zcontrol-card/tree/feat/status-card). See its [full README, screenshots, configuration, and examples](https://github.com/lyonsad/zcontrol-card/blob/feat/status-card/README.md).
+
+Download the test card from [releases](https://github.com/lyonsad/zcontrol-card/releases). Add this repository to HACS as a Dashboard custom repository and choose the beta version to test it before the implementation is merged.
+
+This is an independent community project. Zoeller, Aquanot, APak, and Z-Control names belong to their respective owners. Vendor logo artwork is not bundled.
+
+[MIT license](LICENSE).
