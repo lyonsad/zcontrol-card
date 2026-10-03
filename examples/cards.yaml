@@ -1,0 +1,13 @@
+# Add as a single manual card. Replace prefixes with actual entity names.
+type: grid
+columns: 2
+square: false
+cards:
+  - type: custom:zcontrol-card
+    model: '508'
+    entity_prefix: sump_pump
+    metric_columns: 2
+  - type: custom:zcontrol-card
+    model: apak
+    entity_prefix: sump_alarm
+    metric_columns: 2
