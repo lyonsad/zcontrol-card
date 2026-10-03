@@ -6,7 +6,7 @@ Home Assistant dashboard cards for **Aquanot 508 Fit**, **APak**, and generic su
 
 ## Live screenshots
 
-These are actual Home Assistant cards connected to a Zoeller 508 and APak. Captured from the installed **v0.1.0** card on October 3, 2026; the image is cropped to the cards only, with no alteration to their content. The development demo uses synthetic data and is kept separately under `demo/`.
+These are actual Home Assistant cards connected to a Zoeller 508 and APak. Captured from the installed **v0.1.1** card on October 3, 2026; the image is cropped to the cards only, with no alteration to their content. The development demo uses synthetic data and is kept separately under `demo/`.
 
 <img src="docs/home-assistant-live.png" alt="Actual 508 and APak cards running in Home Assistant" width="520">
 
@@ -20,7 +20,7 @@ These are actual Home Assistant cards connected to a Zoeller 508 and APak. Captu
 | Controllers | Aquanot 508 Fit and APak, live monitoring entities |
 | Integration | Z-Control integration test build `1.1.0-test.4` with corrected 508 mappings |
 
-Verified live: HACS installation, card picker, YAML configuration, both model presets, normal status, telemetry updates, heartbeat display, duration units, and entity more-info. Alarm/offline/stale/unknown behavior has automated and simulated browser coverage; physical alarm events were not deliberately triggered. Generic controllers have simulated coverage only. **HA 2024.11 is the declared minimum, not a live-tested version.**
+Verified live: HACS installation, card picker, YAML configuration, both model presets, normal status, telemetry updates, heartbeat display, duration units, and entity more-info (including the Wi-Fi diagnostics row). Alarm/offline/stale/unknown behavior has automated and simulated browser coverage; physical alarm events were not deliberately triggered. Generic controllers have simulated coverage only. **HA 2024.11 is the declared minimum, not a live-tested version.**
 
 ## Features
 
