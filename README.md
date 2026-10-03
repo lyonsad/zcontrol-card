@@ -6,7 +6,7 @@ Home Assistant dashboard cards for **Aquanot 508 Fit**, **APak**, and generic su
 
 ## Live screenshots
 
-These are actual Home Assistant cards connected to a Zoeller 508 and APak. They are not mockups. The development demo uses synthetic data and is kept separately under `demo/`.
+These are actual Home Assistant cards connected to a Zoeller 508 and APak. Captured from the installed **v0.1.0** card on October 3, 2026; the image is cropped to the cards only, with no alteration to their content. The development demo uses synthetic data and is kept separately under `demo/`.
 
 <img src="docs/home-assistant-live.png" alt="Actual 508 and APak cards running in Home Assistant" width="520">
 
@@ -48,7 +48,7 @@ The 508 preset needs the corrected 508 status mappings and telemetry from a comp
 5. Open **Settings → Dashboards → three-dot menu → Resources**. Confirm `/hacsfiles/zcontrol-card/zcontrol-card.js` is registered as **JavaScript module**. Enable **Advanced mode** in your HA profile if Resources is hidden. If HACS did not add it, add that URL yourself with type JavaScript module.
 6. Add and configure a card using the instructions below.
 
-The implementation is on **`main`**. HACS normally installs a numbered release for repeatable updates; its card asset is built from the published code. To test the current branch directly, use **Need a different version? → main** in HACS. `main` is available, but can include changes newer than a numbered release. This is a custom repository, not a HACS default-store listing.
+The implementation is on **`main`**. HACS normally installs a numbered release for repeatable updates; its card asset matches the published code on `main`. To test the current branch directly, use **Need a different version? → main** in HACS. `main` is available, but can include changes newer than a numbered release. This is a custom repository, not a HACS default-store listing.
 
 ## Install manually from main
 
