@@ -30,11 +30,11 @@ The first version is a **prerelease for testing**. Implementation changes are re
 3. Confirm the dashboard resource exists as a JavaScript module: `/hacsfiles/zcontrol-card/zcontrol-card.js`.
 4. Reload the browser, edit a dashboard, and add **Z-Control Card**, or paste an example into a manual card.
 
-See [HACS custom repositories](https://hacs.xyz/docs/faq/custom_repositories/) and [Home Assistant resources](https://www.home-assistant.io/dashboards/resources/). This repository is not yet in the HACS default store.
+See [HACS custom repositories](https://hacs.xyz/docs/faq/custom_repositories/) and [Home Assistant resources](https://developers.home-assistant.io/docs/frontend/custom-ui/registering-resources/). This repository is not yet in the HACS default store.
 
 ### Manual
 
-Download `zcontrol-card.js` from the [releases page](https://github.com/lyonsad/zcontrol-card/releases), copy it to `config/www/zcontrol-card.js`, and add `/local/zcontrol-card.js` as a **JavaScript module** resource. Reload your browser. Use a version query string when updating if the old file remains cached.
+Download `zcontrol-card.js` from the [releases page](https://github.com/lyonsad/zcontrol-card/releases), copy it to `config/www/zcontrol-card.js`, and add `/local/zcontrol-card.js` as a **JavaScript module** resource. If you create the `www` folder for the first time, restart Home Assistant once so it can serve that directory. Reload your browser. Use a version query string when updating if the old file remains cached.
 
 ## Quick start
 
